@@ -39,11 +39,8 @@ namespace GameMapLoader
             string s_dest_path = Path.Combine(s_path, "datas\\NCSData\\");
             string s_temp_path = Path.Combine(s_path, "temp");
             string s_file = Path.Combine(s_temp_path, "data.zip");
-            CreateDir(s_temp_path);
-            //WriteDataFile( s_file);
-            SetProgress("正在解压缩文件，请稍候...");
             Stream stream = GetType().Assembly.GetManifestResourceStream("GameMapLoader.MapData.data.zip");
-
+            SetProgress("正在解压缩文件，请稍候...");
             ZipInputStream zipStream = new ZipInputStream(stream);
             ZipEntry entry;
             while ((entry = zipStream.GetNextEntry()) != null)
