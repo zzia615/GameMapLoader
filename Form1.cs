@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -29,7 +30,31 @@ namespace GameMapLoader
             timer1.Interval = 1;
             timer1.Start();
         }
-
+        void WriteDataFile(string s_file, string resourceFile)
+        {
+            string[] resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            string assemblyFile = "";
+            foreach (string name in resourceNames)
+            {
+                if (name.Contains(resourceFile))
+                {
+                    assemblyFile = name;
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(assemblyFile))
+            {
+                return;
+            }
+            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(assemblyFile);
+            FileStream fs = File.Open(s_file, FileMode.OpenOrCreate, FileAccess.Write);
+            byte[] bytes = new byte[stream.Length];
+            int readCount = 0;
+            int readLen = stream.Read(bytes, readCount, bytes.Length);
+            fs.Write(bytes, 0, readLen);
+            fs.Flush();
+            fs.Close();
+        }
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Enabled = false;
@@ -60,6 +85,9 @@ namespace GameMapLoader
                 }
             }
             zipStream.Close();
+            SetProgress("正在解压登陆器");
+            WriteDataFile(Path.Combine(s_path, "玄月江湖.exe"), "玄月江湖");
+
             FinishProgress();
 
             b_finished = true;
